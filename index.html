@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温馨提示弹窗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff6b8b',
+                        secondary: '#f8b6cd',
+                        accent: '#ff8fa3',
+                    },
+                    fontFamily: {
+                        sans: ['Microsoft YaHei', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .popup-shadow {
+                box-shadow: 0 10px 25px -5px rgba(255, 107, 139, 0.3);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- 主页面 -->
+    <div class="text-center max-w-2xl mx-auto z-10">
+        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-primary mb-6 animate-pulse">
+            <i class="fa fa-heart text-accent mr-2"></i>温馨提示
+        </h1>
+        <p class="text-gray-600 text-lg mb-8">点击下方按钮，体验随机温馨提示弹窗效果</p>
+        
+        <button id="startBtn" class="bg-primary text-white font-semibold py-4 px-10 rounded-full text-lg btn-hover flex items-center justify-center mx-auto">
+            <i class="fa fa-magic mr-2"></i>开始弹窗效果
+        </button>
+        
+        <p class="text-gray-500 text-sm mt-6">提示：弹窗较多时可刷新页面重置</p>
+    </div>
+    
+    <script>
+        // 温馨提示内容
+        const tips = [
+            "多喝水哦，记得微笑啊~", 
+            "每天都要元气满满", 
+            "记得吃水果", 
+            "保持好心情",
+            "好好爱自己", 
+            "祝王钰涵生日快乐", 
+            "梦想成真", 
+            "期待下一次见面", 
+            "平安喜乐", 
+            "顺顺利利",
+            "生日快乐",
+            "早点休息", 
+            "愿所有烦恼都消失", 
+            "别熬夜", 
+            "今天开心吗", 
+            "天冷了，多穿衣"
+        ];
+        
+        // 弹窗颜色
+        const popupColors = [
+            'bg-lightpink',
+            'bg-pink-100',
+            'bg-pink-200',
+            'bg-rose-100',
+            'bg-fuchsia-100'
+        ];
+        
+        // 点击按钮开始创建弹窗
+        document.getElementById('startBtn').addEventListener('click', () => {
+            // 禁用按钮防止重复点击
+            const btn = document.getElementById('startBtn');
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>生成中...';
+            
+            // 创建150个弹窗，有间隔地生成
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    createPopup();
+                    
+                    // 最后一个弹窗创建完成后恢复按钮状态
+                    if (i === 149) {
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="fa fa-magic mr-2"></i>开始弹窗效果';
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        }, 1000);
+                    }
+                }, i * 85); // 间隔85ms，与原代码保持一致
+            }
+        });
+        
+        // 创建单个弹窗
+        function createPopup() {
+            // 创建弹窗元素
+            const popup = document.createElement('div');
+            
+            // 随机位置
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const popupWidth = 200;
+            const popupHeight = 100;
+            
+            // 计算随机位置，确保弹窗完全显示在屏幕内
+            const x = Math.floor(Math.random() * (screenWidth - popupWidth));
+            const y = Math.floor(Math.random() * (screenHeight - popupHeight));
+            
+            // 随机选择提示内容和背景颜色
+            const tip = tips[Math.floor(Math.random() * tips.length)];
+            const color = popupColors[Math.floor(Math.random() * popupColors.length)];
+            
+            // 设置弹窗样式和内容
+            popup.className = `fixed rounded-lg p-4 popup-shadow transition-all duration-300 transform scale-0 ${color}`;
+            popup.style.width = `${popupWidth}px`;
+            popup.style.height = `${popupHeight}px`;
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            popup.style.zIndex = '1000';
+            popup.style.display = 'flex';
+            popup.style.alignItems = 'center';
+            popup.style.justifyContent = 'center';
+            
+            // 添加内容
+            popup.innerHTML = `
+                <p class="text-gray-800 font-sans text-center text-base" style="font-family: 'Microsoft YaHei', sans-serif;">
+                    ${tip}
+                </p>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(popup);
+            
+            // 添加弹出动画
+            setTimeout(() => {
+                popup.classList.remove('scale-0');
+                popup.classList.add('scale-100');
+            }, 10);
+            
+            // 点击弹窗可以关闭
+            popup.addEventListener('click', () => {
+                popup.classList.remove('scale-100');
+                popup.classList.add('scale-0', 'opacity-0');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            });
+        }
+    </script>
+</body>
+</html>
